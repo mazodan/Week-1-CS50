@@ -6,15 +6,14 @@
  
 void luhnChecksum(long long cNumber);
 int * convertNumberIntoArray(unsigned long long number);
- 
-int main(int argc, string argv[])
+void identifyVendor(int digit);
+
+int main(void)
 {
     //Input, must be positive
     printf("Number: ");
     unsigned long long cardNumber = get_long_long();
     luhnChecksum(cardNumber);
-    //Format
-    //printf("%llu\n",cardNumber);
 }
  
 //FUNCTION CALCULATES THE CHECKSUM 
@@ -28,11 +27,7 @@ void luhnChecksum(long long cNumber){
     int checkSum = 0;
     
     for(int i = 0; i < length; i++){
-        //TODO - ADD 2 DIGITS
-        //FUCK YOU LUHN!!!!
         //378282246310005 - AMEX
-        
-        
         
         //if number is even
         if(i % 2 == 0){            
@@ -40,6 +35,7 @@ void luhnChecksum(long long cNumber){
         }else{
             //checked digit is multiplied by 2
             cArray[i] *= 2;
+            //add 2 digits in advance
             if (cArray[i] > 9){
             	cArray[i] = (int)(cArray[i] / 10) + (cArray[i] % 10);
         	}
@@ -48,18 +44,18 @@ void luhnChecksum(long long cNumber){
         }
     }
     
-    printf("%i\t%i\n", uncheckedSum, checkSum);
     
+    int *nArray;
+    nArray = convertNumberIntoArray(cNumber);
     if ((uncheckedSum + checkSum) % 10 == 0){
-        printf("VALID!!!");
+        identifyVendor((nArray[length - 1] * 10) + nArray[length - 2]);
     }else{
-        printf("%i\n", (uncheckedSum + checkSum));
-        printf("INVALID!!!\n");
+        printf("INVALID\n");
     }
     
 }
  
-//CONVERT A LONG LONG TO AN ARRAY OF INTs
+//CONVERT A LONG LONG TO AN ARRAY OF INTs, from stackexchange
 int * convertNumberIntoArray(unsigned long long number) {
     unsigned int length = (int)(log10((float)number)) + 1;
     int * arr = (int *) malloc(length * sizeof(int)), * curr = arr;
@@ -70,6 +66,39 @@ int * convertNumberIntoArray(unsigned long long number) {
     return arr;
 }
 
-
-
+void identifyVendor(int digit){
+    if (digit / 10 == 4){
+        printf("VISA\n");
+    }else{
+        switch(digit){
+            case 35:
+                printf("JCB\n" );
+            	break;
+            case 34:
+            case 37:
+            	printf("AMEX\n" );
+            	break;
+            case 51:
+            case 52:
+            case 53:
+            case 54:
+            case 55:
+                printf("MASTERCARD\n" );
+            	break;
+            case 56:
+                printf("Bankcard\n" );
+            	break;
+            case 30:
+            case 38:
+                printf("Diners Club\n" );
+            	break;
+            case 60:
+                printf("Discover\n" );
+            	break;
+            default:    
+            	printf("VENDOR NOT FOUND, INVALID\n" );
+        }
+    }
+    
+}
 
